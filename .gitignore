@@ -1,0 +1,32 @@
+# Personal notes (kept out of the public repository)
+GUIDE_PERSO.md
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+dist/
+npm-debug.log*
+
+# Data & ML artifacts
+data/
+mlruns/
+mlartifacts/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
