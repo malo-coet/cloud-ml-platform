@@ -1,7 +1,9 @@
 # Developer shortcuts — run `make help` for the list.
 .DEFAULT_GOAL := help
 
-.PHONY: help up down logs ps clean lint test
+VENV := backend/.venv
+
+.PHONY: help up down logs ps clean deps lint test
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -21,8 +23,16 @@ ps: ## Show service status
 clean: ## Stop the stack AND delete data volumes
 	docker compose down -v
 
-lint: ## Lint the Python services
-	cd backend && ruff check .
+# Local virtualenv for lint/test — always used explicitly so the system
+# Python (macOS ships an old 3.9) never leaks into the toolchain.
+$(VENV):
+	cd backend && python3 -m venv .venv && .venv/bin/pip install -q -e ".[dev]"
 
-test: ## Run the backend test suite
-	cd backend && pytest
+deps: $(VENV) ## (Re)install backend dev dependencies into the venv
+	cd backend && .venv/bin/pip install -q -e ".[dev]"
+
+lint: $(VENV) ## Lint the Python services
+	cd backend && .venv/bin/ruff check .
+
+test: $(VENV) ## Run the backend test suite
+	cd backend && .venv/bin/pytest
