@@ -22,5 +22,13 @@ class Settings(BaseSettings):
     kafka_bootstrap_servers: str = "localhost:29092"
     mlflow_tracking_uri: str = "http://localhost:5001"
 
+    # Object storage (MinIO locally, any S3-compatible store in production)
+    s3_endpoint_url: str = "http://localhost:9000"
+    # Host clients (browsers) resolve presigned URLs against this endpoint
+    s3_public_endpoint_url: str = "http://localhost:9000"
+    s3_datasets_bucket: str = "datasets"
+    aws_access_key_id: str = "minioadmin"
+    aws_secret_access_key: str = "minioadmin"
+
 
 settings = Settings()
