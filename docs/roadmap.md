@@ -13,15 +13,14 @@ The platform is built in 8 sprints of 1–2 weeks, each delivering something wor
 - [x] React + Vite + TypeScript skeleton
 - [x] CI pipeline (lint, tests, build, compose validation)
 
-## Sprint 2 — Backend core & auth
+## Sprint 2 — Backend core & auth ✅
 
 > Phase 3: API, users, database.
 
-- [ ] SQLAlchemy models + Alembic migrations (users, datasets, jobs)
-- [ ] JWT authentication (`POST /login`), password hashing (Argon2)
-- [ ] User management endpoints
-- [ ] Structured logging + error handling
-- [ ] Unit and integration tests (pytest + test database)
+- [x] SQLAlchemy models + Alembic migrations (users table)
+- [x] JWT authentication (`POST /auth/login`), password hashing (Argon2)
+- [x] User management endpoints (register, profile, admin listing and deletion)
+- [x] Unit and integration tests (pytest, in-memory database)
 
 ## Sprint 3 — Datasets
 
@@ -77,6 +76,7 @@ The platform is built in 8 sprints of 1–2 weeks, each delivering something wor
 
 - [ ] Prometheus + Grafana + Node Exporter + kube-state-metrics
 - [ ] Loki + Promtail centralized logging
+- [ ] Structured application logging + error handling
 - [ ] CI/CD: tests → build → push to GHCR → deploy to k3s
 - [ ] RBAC, rate limiting, security headers, Trivy image scans, SAST
 - [ ] Final documentation: screenshots, diagrams, install guides, demo video
