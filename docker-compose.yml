@@ -21,11 +21,13 @@ services:
 
   backend:
     build: ./backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # Apply pending database migrations, then start the API with hot reload
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     ports:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-mlops}:${POSTGRES_PASSWORD:-mlops-dev-password}@postgres:5432/${POSTGRES_DB:-mlplatform}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-secret-change-me}
       REDIS_URL: redis://redis:6379/0
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       MLFLOW_TRACKING_URI: http://mlflow:5000
@@ -33,8 +35,10 @@ services:
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
-      # Hot reload for uvicorn --reload
+      # Hot reload for uvicorn --reload; alembic mounted so new migrations apply without rebuild
       - ./backend/app:/app/app
+      - ./backend/alembic:/app/alembic
+      - ./backend/alembic.ini:/app/alembic.ini:ro
     depends_on:
       postgres:
         condition: service_healthy
