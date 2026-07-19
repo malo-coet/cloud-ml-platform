@@ -22,14 +22,15 @@ The platform is built in 8 sprints of 1–2 weeks, each delivering something wor
 - [x] User management endpoints (register, profile, admin listing and deletion)
 - [x] Unit and integration tests (pytest, in-memory database)
 
-## Sprint 3 — Datasets
+## Sprint 3 — Datasets ✅
 
 > Phase 4: dataset upload and storage.
 
-- [ ] `POST /datasets` upload (CSV, images, ZIP, Parquet) streamed to MinIO
-- [ ] Metadata in PostgreSQL: owner, date, version, size, type
-- [ ] `GET /datasets` listing with pagination
-- [ ] Dataset versioning
+- [x] `POST /datasets` upload (CSV, images, ZIP, Parquet) streamed to MinIO
+- [x] Metadata in PostgreSQL: owner, date, version, size, type
+- [x] `GET /datasets` listing with pagination + presigned download URLs
+- [x] Dataset versioning (same name → auto-incremented version)
+- [x] Adminer added to the dev stack to browse the database
 
 ## Sprint 4 — Training & MLflow
 

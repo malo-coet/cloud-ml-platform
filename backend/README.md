@@ -32,6 +32,13 @@ Swagger UI: http://localhost:8000/api/docs
 | `PATCH` | `/api/v1/users/me` | JWT | Update own name / password |
 | `GET` | `/api/v1/users` | admin | List users (paginated) |
 | `DELETE` | `/api/v1/users/{id}` | admin | Delete a user |
+| `POST` | `/api/v1/datasets` | JWT | Upload a dataset file (csv, parquet, zip, png/jpg) |
+| `GET` | `/api/v1/datasets` | JWT | List your datasets (each version is an entry) |
+| `GET` | `/api/v1/datasets/{id}` | JWT | Dataset metadata |
+| `GET` | `/api/v1/datasets/{id}/download` | JWT | Short-lived presigned download URL |
+| `DELETE` | `/api/v1/datasets/{id}` | JWT | Delete a dataset version (file + metadata) |
+
+Dataset files are streamed to MinIO under `datasets/{owner_id}/{name}/v{version}/{filename}`; only metadata (owner, size, format, version) lives in PostgreSQL. Re-uploading under the same name automatically creates a new version.
 
 Passwords are hashed with **Argon2id**; tokens are **HS256 JWTs** (1 h lifetime by default).
 
