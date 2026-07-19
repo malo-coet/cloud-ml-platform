@@ -32,6 +32,7 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       MLFLOW_TRACKING_URI: http://mlflow:5000
       S3_ENDPOINT_URL: http://minio:9000
+      S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
@@ -69,6 +70,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  adminer:
+    # Web UI to browse the PostgreSQL databases (dev only)
+    image: adminer:5.5.0
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   redis:
     image: redis:7-alpine
