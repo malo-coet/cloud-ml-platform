@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     environment: str = "development"
     cors_origins: list[str] = ["http://localhost:5173"]
 
+    # Auth — the default secret is for local dev only, always overridden in production
+    jwt_secret_key: str = "dev-secret-change-me"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+
     # Infrastructure endpoints — wired in from Sprint 2 onwards
     database_url: str = "postgresql+psycopg://mlops:mlops-dev-password@localhost:5432/mlplatform"
     redis_url: str = "redis://localhost:6379/0"
