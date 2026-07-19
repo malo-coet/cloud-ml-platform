@@ -96,6 +96,7 @@ docker compose up -d --build
 | API docs (Swagger) | http://localhost:8000/api/docs |
 | MLflow UI | http://localhost:5001 |
 | MinIO console | http://localhost:9001 |
+| Adminer (database UI) | http://localhost:8080 |
 
 > macOS note: MLflow is exposed on port **5001** because macOS reserves port 5000 for AirPlay Receiver.
 
