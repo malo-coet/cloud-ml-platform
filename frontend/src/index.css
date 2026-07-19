@@ -1,17 +1,13 @@
 :root {
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
-  color-scheme: dark;
-  color: #e5e7eb;
-  background: #0b1120;
+  font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+  color: #18181b;
+  background: #fcfcfc;
+  -webkit-font-smoothing: antialiased;
 }
 
 * {
   margin: 0;
   box-sizing: border-box;
-}
-
-body {
-  min-height: 100vh;
 }
 
 .shell {
@@ -20,54 +16,61 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
+  gap: 1.5rem;
   padding: 2rem;
   text-align: center;
 }
 
 h1 {
-  font-size: 2.5rem;
-  background: linear-gradient(90deg, #38bdf8, #818cf8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
 
 .tagline {
-  color: #94a3b8;
-  font-size: 1.1rem;
+  color: #71717a;
+  font-size: 1.05rem;
+  font-weight: 300;
 }
 
 .status {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0.55rem;
+  padding: 0.45rem 1.1rem;
   border-radius: 999px;
-  border: 1px solid #334155;
-  font-size: 0.95rem;
+  border: 1px solid #e4e4e7;
+  background: #ffffff;
+  font-size: 0.875rem;
+  color: #3f3f46;
 }
 
 .dot {
-  width: 0.6rem;
-  height: 0.6rem;
+  width: 0.45rem;
+  height: 0.45rem;
   border-radius: 50%;
-  background: #64748b;
+  background: #a1a1aa;
 }
 
 .status-online .dot {
-  background: #34d399;
+  background: #16a34a;
 }
 
 .status-offline .dot {
-  background: #f87171;
+  background: #dc2626;
 }
 
 .hint {
-  color: #64748b;
-  font-size: 0.9rem;
+  color: #a1a1aa;
+  font-size: 0.85rem;
 }
 
 .hint a {
-  color: #38bdf8;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hint a:hover {
+  color: #18181b;
 }
