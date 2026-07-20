@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, datasets, health, users
+from app.api.routes import auth, datasets, experiments, health, train, users
 from app.core.config import settings
 
 
@@ -23,6 +23,8 @@ def create_app() -> FastAPI:
     app.include_router(auth.router, prefix="/api/v1")
     app.include_router(users.router, prefix="/api/v1")
     app.include_router(datasets.router, prefix="/api/v1")
+    app.include_router(train.router, prefix="/api/v1")
+    app.include_router(experiments.router, prefix="/api/v1")
     return app
 
 
