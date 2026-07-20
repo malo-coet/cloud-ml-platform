@@ -32,15 +32,16 @@ The platform is built in 8 sprints of 1–2 weeks, each delivering something wor
 - [x] Dataset versioning (same name → auto-incremented version)
 - [x] Adminer added to the dev stack to browse the database
 
-## Sprint 4 — Training & MLflow
+## Sprint 4 — Training & MLflow ✅
 
 > Phases 5 & 7: training microservice, experiment tracking.
 
-- [ ] Training service skeleton (standalone worker)
-- [ ] Iris pipeline: fetch → preprocess → train → metrics → MLflow
-- [ ] MNIST, then CIFAR-10 (PyTorch)
-- [ ] Model Registry usage (versions, stages)
-- [ ] `POST /train`, `GET /experiments`, `GET /models` endpoints
+- [x] Training service worker (claims queued jobs with `FOR UPDATE SKIP LOCKED`)
+- [x] Tabular pipeline: fetch from MinIO → preprocess → train → metrics → MLflow
+- [x] Two model types (logistic regression, random forest) with hyperparameters
+- [x] Model Registry usage (each run registers a `{dataset}-classifier` version)
+- [x] `POST /train`, `GET /train`, `GET /experiments`, `GET /models` endpoints
+- [ ] MNIST, then CIFAR-10 (PyTorch) — after the event-driven refactor (Sprint 5)
 
 ## Sprint 5 — Event-driven architecture
 
