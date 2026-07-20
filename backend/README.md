@@ -37,6 +37,11 @@ Swagger UI: http://localhost:8000/api/docs
 | `GET` | `/api/v1/datasets/{id}` | JWT | Dataset metadata |
 | `GET` | `/api/v1/datasets/{id}/download` | JWT | Short-lived presigned download URL |
 | `DELETE` | `/api/v1/datasets/{id}` | JWT | Delete a dataset version (file + metadata) |
+| `POST` | `/api/v1/train` | JWT | Queue a training job (202 — processed asynchronously) |
+| `GET` | `/api/v1/train` | JWT | List your training jobs and their status |
+| `GET` | `/api/v1/train/{id}` | JWT | Job detail (status, error, MLflow run id) |
+| `GET` | `/api/v1/experiments` | JWT | Latest MLflow runs with params and metrics |
+| `GET` | `/api/v1/models` | JWT | Models in the MLflow Model Registry |
 
 Dataset files are streamed to MinIO under `datasets/{owner_id}/{name}/v{version}/{filename}`; only metadata (owner, size, format, version) lives in PostgreSQL. Re-uploading under the same name automatically creates a new version.
 
