@@ -1,0 +1,42 @@
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: 100%;
+  max-width: 360px;
+  padding: 2rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
+.logo {
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent), #818cf8);
+}
+
+.lead {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: -0.4rem;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
