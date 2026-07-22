@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
 
 from app.services import mlflow_client
+from app.services.events import TOPIC_TRAINING_REQUESTED
+from tests.conftest import FakeProducer
 from tests.test_auth import ALICE, BOB, register
 from tests.test_datasets import auth_header, upload
 
@@ -23,6 +25,35 @@ def test_train_queues_a_job(client: TestClient) -> None:
     assert job["model_type"] == "logistic_regression"
     assert job["hyperparameters"] == {"max_iter": 500}
     assert job["mlflow_run_id"] is None
+
+
+def test_train_publishes_training_requested_event(
+    client: TestClient, producer: FakeProducer
+) -> None:
+    register(client, ALICE)
+    headers = auth_header(client, ALICE)
+    dataset = upload(client, headers)
+
+    job = queue_job(client, headers, dataset["id"])
+
+    assert len(producer.events) == 1
+    topic, key, value = producer.events[0]
+    assert topic == TOPIC_TRAINING_REQUESTED
+    assert key == job["id"]
+    assert value["job_id"] == job["id"]
+    assert value["dataset_id"] == dataset["id"]
+
+
+def test_rejected_train_publishes_nothing(client: TestClient, producer: FakeProducer) -> None:
+    register(client, ALICE)
+    register(client, BOB)
+    dataset = upload(client, auth_header(client, ALICE))
+
+    # Bob cannot train on Alice's dataset — no event should be emitted
+    client.post(
+        "/api/v1/train", json={"dataset_id": dataset["id"]}, headers=auth_header(client, BOB)
+    )
+    assert producer.events == []
 
 
 def test_train_rejects_foreign_dataset(client: TestClient) -> None:
