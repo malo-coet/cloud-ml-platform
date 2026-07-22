@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: training-service
+  namespace: mlops
+spec:
+  # Scale out by raising this: Kafka consumer groups split the work automatically
+  replicas: 1
+  selector:
+    matchLabels:
+      app: training-service
+  template:
+    metadata:
+      labels:
+        app: training-service
+    spec:
+      containers:
+        - name: training-service
+          image: ghcr.io/malo-coet/cloud-ml-platform/training-service:latest
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: postgresql+psycopg://mlops:$(POSTGRES_PASSWORD)@postgres:5432/mlplatform
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            - name: MLFLOW_TRACKING_URI
+              value: http://mlflow:5000
+            - name: S3_ENDPOINT_URL
+              value: http://minio:9000
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MINIO_ROOT_USER
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MINIO_ROOT_PASSWORD
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 100m
+            limits:
+              memory: 1536Mi

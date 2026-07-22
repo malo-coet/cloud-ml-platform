@@ -1,0 +1,16 @@
+# k3s installs Traefik through a HelmChart; HelmChartConfig is the supported way
+# to override its values. This redirects every plain-HTTP request to HTTPS
+# cluster-wide. Let's Encrypt follows the redirect, so HTTP-01 challenges still
+# succeed.
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    ports:
+      web:
+        redirectTo:
+          port: websecure
+          priority: 10
