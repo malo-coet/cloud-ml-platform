@@ -1,0 +1,7 @@
+# Copy to terraform.tfvars and fill in. NEVER commit the real file.
+do_token = "dop_v1_replace_with_your_digitalocean_token"
+
+# Optional overrides
+# region              = "fra1"
+# droplet_size        = "s-2vcpu-4gb"
+# ssh_public_key_path = "~/.ssh/id_ed25519.pub"

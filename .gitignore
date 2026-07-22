@@ -26,6 +26,16 @@ data/
 mlruns/
 mlartifacts/
 
+# Infrastructure secrets and state — NEVER commit these
+infra/opentofu/.terraform/
+infra/opentofu/*.tfstate
+infra/opentofu/*.tfstate.*
+infra/opentofu/.terraform.lock.hcl
+terraform.tfvars
+infra/ansible/inventory.ini
+infra/kubernetes/secrets.yaml
+kubeconfig
+
 # IDE / OS
 .DS_Store
 .idea/
