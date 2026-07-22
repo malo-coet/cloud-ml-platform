@@ -43,14 +43,15 @@ The platform is built in 8 sprints of 1–2 weeks, each delivering something wor
 - [x] `POST /train`, `GET /train`, `GET /experiments`, `GET /models` endpoints
 - [ ] MNIST, then CIFAR-10 (PyTorch) — after the event-driven refactor (Sprint 5)
 
-## Sprint 5 — Event-driven architecture
+## Sprint 5 — Event-driven architecture ✅
 
 > Phase 6: Kafka everywhere.
 
-- [ ] Kafka producer in the backend (`TrainingRequested`, `DeployRequested`, …)
-- [ ] Kafka consumer in the training service
-- [ ] Job status lifecycle (`pending → running → completed/failed`)
-- [ ] Dead-letter handling and retries
+- [x] Kafka producer in the backend (`TrainingRequested`)
+- [x] Kafka consumer in the training service (replaces database polling)
+- [x] Job status lifecycle (`queued → running → completed/failed`) driven by events
+- [x] `TrainingCompleted` event + dead-letter topic for poison messages
+- [x] Idempotent processing (redelivered events are skipped)
 
 ## Sprint 6 — Frontend
 
