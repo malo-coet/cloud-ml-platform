@@ -1,0 +1,85 @@
+# Traefik (bundled with k3s) terminates TLS; cert-manager issues and renews the
+# Let's Encrypt certificate for every host listed under `tls`.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: platform
+  namespace: mlops
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: traefik
+  tls:
+    - secretName: platform-tls
+      hosts:
+        - mlops.mcoet.com
+        - api.mlops.mcoet.com
+        - mlflow.mlops.mcoet.com
+        - minio.mlops.mcoet.com
+        - s3.mlops.mcoet.com
+  rules:
+    # Dashboard, with the API served under the same origin (no CORS needed)
+    - host: mlops.mcoet.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+
+    # Direct API access (Swagger lives at /api/docs)
+    - host: api.mlops.mcoet.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+
+    - host: mlflow.mlops.mcoet.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mlflow
+                port:
+                  number: 5000
+
+    # MinIO web console
+    - host: minio.mlops.mcoet.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9001
+
+    # MinIO S3 API — presigned dataset download links point here
+    - host: s3.mlops.mcoet.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000

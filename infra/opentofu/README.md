@@ -1,5 +1,20 @@
-# OpenTofu
+# OpenTofu — cloud resources
 
-Declarative cloud resources on DigitalOcean: droplet, cloud firewall, DNS records for `mlops.mcoet.com` sub-domains.
+Declares the DigitalOcean resources the platform runs on:
 
-**Status: placeholder — populated in Sprint 7** (see [docs/roadmap.md](../../docs/roadmap.md)).
+- **Droplet** (`s-2vcpu-4gb`, Ubuntu 24.04) hosting the k3s cluster
+- **Cloud firewall** allowing only SSH, HTTP, HTTPS and ICMP inbound
+- **SSH key** uploaded from your local public key
+
+```bash
+cp terraform.tfvars.example terraform.tfvars   # add your DigitalOcean token
+tofu init && tofu plan && tofu apply
+tofu output droplet_ip
+```
+
+`tofu destroy` removes everything and stops all billing.
+
+State files, `terraform.tfvars` and `.terraform/` are gitignored — they contain
+credentials and infrastructure state.
+
+Full walkthrough: [docs/deployment.md](../../docs/deployment.md).

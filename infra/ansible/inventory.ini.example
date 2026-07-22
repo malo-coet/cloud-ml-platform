@@ -1,0 +1,11 @@
+# Copy to inventory.ini and replace the IP with the OpenTofu `droplet_ip` output.
+#
+# First run: connect as root (DigitalOcean's default).
+# After the playbook has run once, root login is disabled — switch
+# ansible_user to `deploy` for every later run.
+
+[platform]
+203.0.113.10 ansible_user=root
+
+# [platform]
+# 203.0.113.10 ansible_user=deploy

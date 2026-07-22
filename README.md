@@ -105,6 +105,7 @@ Stop everything with `docker compose down` (add `-v` to also wipe data volumes).
 ## Documentation
 
 - [Architecture](docs/architecture.md) — components, data flows, event catalogue
+- [Deployment](docs/deployment.md) — provisioning a VPS and running on k3s
 - [Roadmap](docs/roadmap.md) — sprint-by-sprint plan and progress
 - [Tech choices](docs/tech-choices.md) — why each technology was picked
 

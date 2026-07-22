@@ -63,15 +63,17 @@ The platform is built in 8 sprints of 1–2 weeks, each delivering something wor
 - [x] Metric charts (accuracy bar chart, precision/recall/F1 table)
 - [x] Models page (registry) and Profile page (with admin user management)
 
-## Sprint 7 — VPS & Kubernetes
+## Sprint 7 — VPS & Kubernetes 🚧
 
 > Phases 8–12: production infrastructure.
 
-- [ ] DigitalOcean droplet provisioning (OpenTofu + Ansible)
-- [ ] Hardening: SSH keys, firewall, Fail2Ban, unattended upgrades
-- [ ] k3s + Traefik + cert-manager (Let's Encrypt)
-- [ ] Kubernetes manifests for every component
-- [ ] DNS sub-domains under `mlops.mcoet.com`
+- [x] DigitalOcean droplet provisioning (OpenTofu: droplet, firewall, SSH key)
+- [x] Hardening: deploy user, key-only SSH, UFW, Fail2Ban, unattended upgrades, swap
+- [x] k3s + Traefik + cert-manager (Let's Encrypt `ClusterIssuer`)
+- [x] Kubernetes manifests for every component (+ Ingress and TLS)
+- [x] Container images published to GHCR by CI
+- [x] Deployment guide ([docs/deployment.md](deployment.md))
+- [ ] Apply to the live droplet and DNS sub-domains under `mlops.mcoet.com`
 - [ ] Deployment service: model → Docker image → k8s Deployment → prediction endpoint
 
 ## Sprint 8 — Observability, security, CI/CD

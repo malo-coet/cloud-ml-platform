@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Apply with:  kubectl apply -k infra/kubernetes/
+#
+# secrets.yaml is deliberately absent — it holds real credentials, is gitignored,
+# and must be applied once by hand before this kustomization.
+resources:
+  - namespace.yaml
+  - traefik-config.yaml
+  - postgres.yaml
+  - redis.yaml
+  - minio.yaml
+  - kafka.yaml
+  - mlflow.yaml
+  - backend.yaml
+  - frontend.yaml
+  - training-service.yaml
+  - ingress.yaml

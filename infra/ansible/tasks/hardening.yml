@@ -1,0 +1,100 @@
+---
+- name: Update the package cache and upgrade installed packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: safe
+    cache_valid_time: 3600
+
+- name: Install baseline packages
+  ansible.builtin.apt:
+    name:
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+      - curl
+      - ca-certificates
+    state: present
+
+# --- Unprivileged administration account -----------------------------------
+
+- name: Create the deploy user
+  ansible.builtin.user:
+    name: "{{ deploy_user }}"
+    groups: sudo
+    shell: /bin/bash
+    create_home: true
+
+- name: Authorise the SSH key for the deploy user
+  ansible.posix.authorized_key:
+    user: "{{ deploy_user }}"
+    key: "{{ lookup('file', deploy_public_key_path | expanduser) }}"
+    state: present
+
+- name: Allow the deploy user to sudo without a password
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/90-{{ deploy_user }}"
+    content: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    mode: "0440"
+    validate: visudo -cf %s
+
+# --- SSH ---------------------------------------------------------------------
+# Runs only after the deploy user can log in, so this cannot lock you out.
+
+- name: Enforce key-only SSH and disable root login
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/99-hardening.conf
+    mode: "0644"
+    content: |
+      # Managed by Ansible
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      X11Forwarding no
+      MaxAuthTries 3
+  notify: Restart ssh
+
+# --- Firewall ----------------------------------------------------------------
+
+- name: Set default UFW policies
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: deny }
+    - { direction: outgoing, policy: allow }
+
+- name: Allow public services through UFW
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: ["22", "80", "443"]
+
+# Without these, UFW's default-deny policy breaks pod-to-pod traffic.
+- name: Allow k3s cluster traffic through UFW
+  community.general.ufw:
+    rule: allow
+    src: "{{ item }}"
+  loop:
+    - "{{ k3s_pod_cidr }}"
+    - "{{ k3s_service_cidr }}"
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+
+# --- Automatic security updates ---------------------------------------------
+
+- name: Enable unattended security upgrades
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    mode: "0644"
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+
+- name: Enable and start fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    enabled: true
+    state: started
