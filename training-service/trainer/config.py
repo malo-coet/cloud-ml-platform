@@ -14,8 +14,9 @@ class Settings(BaseSettings):
     aws_access_key_id: str = "minioadmin"
     aws_secret_access_key: str = "minioadmin"
 
-    # Polling is a Sprint 4 stopgap — replaced by a Kafka consumer in Sprint 5
-    poll_interval_seconds: float = 3.0
+    kafka_bootstrap_servers: str = "localhost:29092"
+    # Consumer group — scale out by running several replicas in this same group
+    kafka_consumer_group: str = "training-service"
 
 
 settings = Settings()

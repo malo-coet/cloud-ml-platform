@@ -70,22 +70,28 @@ sequenceDiagram
     K->>TR: Consume TrainingRequested
     TR->>S3: Download dataset
     TR->>TR: Preprocess + train
+    TR->>TR: Mark job running, then completed/failed
     TR->>M: Log params, metrics, model
     M->>S3: Store artifacts
     TR->>K: Publish TrainingCompleted
-    K->>API: Consume TrainingCompleted (update job status)
-    FE->>API: GET /experiments (polling / refresh)
+    FE->>API: GET /experiments (refresh)
 ```
 
 ### Event catalogue
 
-| Event | Producer | Consumer | Payload (summary) |
-|---|---|---|---|
-| `TrainingRequested` | Backend | Training Service | job id, dataset id, model type, hyperparameters |
-| `TrainingCompleted` | Training Service | Backend | job id, MLflow run id, metrics |
-| `DeployRequested` | Backend | Deployment Service | model name, version, target stage |
-| `ModelDeployed` | Deployment Service | Backend | model name, version, endpoint URL |
-| `DeleteModel` | Backend | Deployment Service | model name, version |
+| Topic | Producer | Consumer | Payload (summary) | Status |
+|---|---|---|---|---|
+| `training.requested` | Backend | Training Service | job id, dataset id, model type | ✅ implemented |
+| `training.completed` | Training Service | (future: notifier) | job id, status, MLflow run id, error | ✅ implemented |
+| `training.requested.dlq` | Training Service | — (manual inspection) | original poison message | ✅ implemented |
+| `deploy.requested` | Backend | Deployment Service | model name, version, target stage | planned (Sprint 7) |
+| `model.deployed` | Deployment Service | Backend | model name, version, endpoint URL | planned (Sprint 7) |
+
+The training service both updates the job row (it owns job execution) and emits
+`training.completed` for downstream consumers. Consumer groups guarantee each
+event is processed once; redelivered events are skipped idempotently, and
+messages that can never be processed (malformed, unknown job) go to the
+dead-letter topic.
 
 ## Storage layout
 

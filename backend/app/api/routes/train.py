@@ -9,13 +9,20 @@ from app.models.dataset import DatasetFormat
 from app.models.training_job import TrainingJob
 from app.models.user import UserRole
 from app.schemas.training_job import TrainingJobRead, TrainRequest
+from app.services.events import TOPIC_TRAINING_REQUESTED, Producer
 
 router = APIRouter(prefix="/train", tags=["training"])
 
 
 @router.post("", response_model=TrainingJobRead, status_code=status.HTTP_202_ACCEPTED)
-def request_training(payload: TrainRequest, user: CurrentUser, db: DbSession) -> TrainingJob:
-    """Queue a training job — the training service picks it up asynchronously."""
+def request_training(
+    payload: TrainRequest, user: CurrentUser, db: DbSession, producer: Producer
+) -> TrainingJob:
+    """Queue a training job by publishing a TrainingRequested event.
+
+    The API never trains anything itself — the training service consumes the
+    event and reports back through the job's status.
+    """
     dataset = _get_accessible_dataset(payload.dataset_id, user, db)
     if dataset.format != DatasetFormat.csv:
         raise HTTPException(
@@ -32,6 +39,17 @@ def request_training(payload: TrainRequest, user: CurrentUser, db: DbSession) ->
     db.add(job)
     db.commit()
     db.refresh(job)
+
+    producer.publish(
+        TOPIC_TRAINING_REQUESTED,
+        key=str(job.id),
+        value={
+            "job_id": str(job.id),
+            "dataset_id": str(dataset.id),
+            "dataset_name": dataset.name,
+            "model_type": job.model_type,
+        },
+    )
     return job
 
 

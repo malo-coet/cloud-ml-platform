@@ -1,8 +1,20 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import auth, datasets, experiments, health, train, users
 from app.core.config import settings
+from app.services.events import get_producer, producer_was_created
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    yield
+    # Deliver any buffered events before the process exits
+    if producer_was_created():
+        get_producer().flush()
 
 
 def create_app() -> FastAPI:
@@ -11,6 +23,7 @@ def create_app() -> FastAPI:
         version=settings.version,
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
+        lifespan=lifespan,
     )
     app.add_middleware(
         CORSMiddleware,
