@@ -1,0 +1,41 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(24, 24, 27, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 50;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 440px;
+  padding: 1.5rem;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  font-size: 1.1rem;
+}
+
+.close {
+  border: none;
+  background: none;
+  color: var(--text-subtle);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.close:hover {
+  color: var(--text);
+}
