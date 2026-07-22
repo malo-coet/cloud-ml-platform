@@ -53,14 +53,15 @@ The platform is built in 8 sprints of 1–2 weeks, each delivering something wor
 - [x] `TrainingCompleted` event + dead-letter topic for poison messages
 - [x] Idempotent processing (redelivered events are skipped)
 
-## Sprint 6 — Frontend
+## Sprint 6 — Frontend ✅
 
 > Phase 17: dashboard.
 
-- [ ] Login page + JWT session handling
-- [ ] Datasets, Experiments, Models, Deployments pages
-- [ ] Metric charts (accuracy, loss, precision, recall)
-- [ ] Training history
+- [x] Login page + JWT session handling (localStorage, auto-logout on 401)
+- [x] Datasets page: upload, download, delete, one-click training
+- [x] Experiments page: live-refreshing job history + MLflow runs
+- [x] Metric charts (accuracy bar chart, precision/recall/F1 table)
+- [x] Models page (registry) and Profile page (with admin user management)
 
 ## Sprint 7 — VPS & Kubernetes
 
