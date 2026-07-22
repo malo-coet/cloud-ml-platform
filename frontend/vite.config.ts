@@ -8,6 +8,9 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    // Poll for changes: macOS→Linux bind mounts don't propagate inotify events,
+    // so without this the dev server never sees edited files inside Docker.
+    watch: { usePolling: true, interval: 300 },
     proxy: {
       "/api": {
         target: process.env.VITE_API_PROXY_TARGET ?? "http://localhost:8000",
