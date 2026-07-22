@@ -1,0 +1,89 @@
+---
+# k3s ships with Traefik as its ingress controller, so the platform only needs
+# cert-manager on top to obtain Let's Encrypt certificates.
+
+- name: Check whether k3s is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Download the k3s installer
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s-install.sh
+    mode: "0755"
+  when: not k3s_binary.stat.exists
+
+- name: Install k3s
+  ansible.builtin.command: /tmp/k3s-install.sh
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    # 0644 lets the deploy user read the kubeconfig without sudo
+    INSTALL_K3S_EXEC: "--write-kubeconfig-mode 0644"
+  when: not k3s_binary.stat.exists
+  changed_when: true
+
+- name: Wait for the cluster to become ready
+  ansible.builtin.command: k3s kubectl wait --for=condition=Ready node --all --timeout=180s
+  changed_when: false
+
+- name: Give the deploy user a kubeconfig
+  block:
+    - name: Create the kube directory
+      ansible.builtin.file:
+        path: "/home/{{ deploy_user }}/.kube"
+        state: directory
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: "0700"
+
+    - name: Copy the cluster kubeconfig
+      ansible.builtin.copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "/home/{{ deploy_user }}/.kube/config"
+        remote_src: true
+        owner: "{{ deploy_user }}"
+        group: "{{ deploy_user }}"
+        mode: "0600"
+
+# --- cert-manager ------------------------------------------------------------
+
+- name: Install cert-manager
+  ansible.builtin.command: >-
+    k3s kubectl apply -f
+    https://github.com/cert-manager/cert-manager/releases/download/{{ cert_manager_version }}/cert-manager.yaml
+  register: cert_manager_apply
+  changed_when: "'created' in cert_manager_apply.stdout"
+
+- name: Wait for cert-manager to be available
+  ansible.builtin.command: >-
+    k3s kubectl -n cert-manager wait --for=condition=Available
+    deployment/cert-manager deployment/cert-manager-webhook deployment/cert-manager-cainjector
+    --timeout=300s
+  changed_when: false
+
+- name: Define the Let's Encrypt issuer
+  ansible.builtin.copy:
+    dest: /etc/rancher/k3s/cluster-issuer.yaml
+    mode: "0644"
+    content: |
+      apiVersion: cert-manager.io/v1
+      kind: ClusterIssuer
+      metadata:
+        name: letsencrypt
+      spec:
+        acme:
+          server: https://acme-v02.api.letsencrypt.org/directory
+          email: {{ letsencrypt_email }}
+          privateKeySecretRef:
+            name: letsencrypt-account-key
+          solvers:
+            - http01:
+                ingress:
+                  class: traefik
+  register: issuer_manifest
+
+- name: Apply the Let's Encrypt issuer
+  ansible.builtin.command: k3s kubectl apply -f /etc/rancher/k3s/cluster-issuer.yaml
+  when: issuer_manifest.changed
+  changed_when: true

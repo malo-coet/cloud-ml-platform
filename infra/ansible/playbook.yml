@@ -1,0 +1,23 @@
+---
+- name: Provision the Cloud ML Platform host
+  hosts: platform
+  become: true
+
+  tasks:
+    - name: Harden the operating system
+      ansible.builtin.import_tasks: tasks/hardening.yml
+      tags: [hardening]
+
+    - name: Configure swap
+      ansible.builtin.import_tasks: tasks/swap.yml
+      tags: [swap]
+
+    - name: Install k3s and cert-manager
+      ansible.builtin.import_tasks: tasks/k3s.yml
+      tags: [k3s]
+
+  handlers:
+    - name: Restart ssh
+      ansible.builtin.systemd:
+        name: ssh
+        state: restarted

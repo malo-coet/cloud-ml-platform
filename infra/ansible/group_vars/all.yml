@@ -1,0 +1,20 @@
+---
+# Unprivileged account created for day-to-day administration
+deploy_user: deploy
+
+# Public key granted SSH access (defaults to the key you used with OpenTofu)
+deploy_public_key_path: "~/.ssh/id_ed25519.pub"
+
+# Pinned so re-running the playbook never silently upgrades the cluster
+k3s_version: "v1.36.2+k3s1"
+cert_manager_version: "v1.21.0"
+
+# Address Let's Encrypt uses for expiry warnings — override in your inventory
+letsencrypt_email: "malocoet@gmail.com"
+
+# Swap keeps the 4 GB droplet comfortable when several services start at once
+swap_size_mb: 2048
+
+# k3s default CIDRs, allowed through UFW so pods can talk to each other
+k3s_pod_cidr: "10.42.0.0/16"
+k3s_service_cidr: "10.43.0.0/16"
